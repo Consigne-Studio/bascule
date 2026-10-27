@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Édition Pro quand le réécrivain est présent (dépôt privé) ; le dépôt public ne contient que l'édition gratuite. -->
+    <Edition Condition="'$(Edition)' == '' and Exists('..\Bascule.Conversion\Bascule.Conversion.csproj')">Pro</Edition>
+    <Edition Condition="'$(Edition)' == ''">Gratuite</Edition>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>bascule</AssemblyName>
+    <RootNamespace>Bascule.Cli</RootNamespace>
+    <RollForward>Major</RollForward>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>bascule</ToolCommandName>
+    <PackageId Condition="'$(Edition)' == 'Pro'">Bascule.Pro</PackageId>
+    <PackageId Condition="'$(Edition)' != 'Pro'">Bascule</PackageId>
+    <Description Condition="'$(Edition)' == 'Pro'">Migration d'une suite de tests Selenium C# vers Playwright .NET, avec rapport (édition Pro, licence commerciale).</Description>
+    <Description Condition="'$(Edition)' != 'Pro'">Diagnostic d'une suite de tests Selenium C# avant sa migration vers Playwright .NET (édition gratuite, MIT).</Description>
+    <PackageTags>selenium;playwright;migration;roslyn;tests</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <DefineConstants Condition="'$(Edition)' == 'Pro'">$(DefineConstants);EDITION_PRO</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Seules les métadonnées de Selenium servent : pas de Selenium Manager (21 Mo d'exécutables) dans l'outil. -->
+    <PackageReference Include="Selenium.WebDriver" Version="4.51.0" ExcludeAssets="build;buildTransitive;native" />
+    <ProjectReference Include="..\Bascule.Noyau\Bascule.Noyau.csproj" />
+    <ProjectReference Include="..\Bascule.Conversion\Bascule.Conversion.csproj" Condition="'$(Edition)' == 'Pro'" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="paquet\README-pro.md" Pack="true" PackagePath="\README.md" Condition="'$(Edition)' == 'Pro'" />
+    <None Include="paquet\LICENSE-pro.txt" Pack="true" PackagePath="\LICENSE.txt" Condition="'$(Edition)' == 'Pro'" />
+    <None Include="paquet\README-gratuite.md" Pack="true" PackagePath="\README.md" Condition="'$(Edition)' != 'Pro'" />
+    <None Include="paquet\LICENSE-gratuite.txt" Pack="true" PackagePath="\LICENSE.txt" Condition="'$(Edition)' != 'Pro'" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="\" />
+    <None Include="..\Bascule.Noyau\Rapport\Ressources\OFL.txt" Pack="true" PackagePath="\LICENCE-POLICES.txt" />
+  </ItemGroup>
+</Project>

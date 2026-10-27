@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Atelier démo — panier</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><h1>Atelier démo</h1><a href="catalogue.html">Catalogue</a></header>
+<main>
+  <h2>Panier</h2>
+  <table id="lignes"><thead><tr><th>Référence</th><th>Quantité</th></tr></thead><tbody></tbody></table>
+  <p>Total articles : <strong id="total">0</strong></p>
+  <p>Note : <span id="note">aucune</span></p>
+  <p>
+    <button type="button" id="ajouter-note">Ajouter une note</button>
+    <button type="button" id="vider">Vider le panier</button>
+    <a href="commande.html" id="commander">Commander</a>
+  </p>
+</main>
+<script>
+let panier = JSON.parse(localStorage.getItem('panier') || '[]');
+function afficher() {
+  const corps = document.querySelector('#lignes tbody'); corps.innerHTML = '';
+  const refs = [...new Set(panier)];
+  for (const ref of refs) {
+    const n = panier.filter(x => x === ref).length;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${ref}</td><td><select class="quantite" data-ref="${ref}">${[1,2,3,4,5].map(i => `<option value="${i}"${i === n ? ' selected' : ''}>${i}</option>`).join('')}</select></td>`;
+    corps.appendChild(tr);
+  }
+  document.getElementById('total').textContent = panier.length;
+}
+afficher();
+document.addEventListener('change', e => {
+  if (!e.target.matches('select.quantite')) return;
+  const ref = e.target.dataset.ref, q = +e.target.value;
+  panier = panier.filter(x => x !== ref).concat(Array(q).fill(ref));
+  localStorage.setItem('panier', JSON.stringify(panier)); afficher();
+});
+document.getElementById('vider').addEventListener('click', () => {
+  if (confirm('Vider le panier ?')) { panier = []; localStorage.setItem('panier', '[]'); afficher(); }
+});
+document.getElementById('ajouter-note').addEventListener('click', () => {
+  const n = prompt('Votre note');
+  if (n) document.getElementById('note').textContent = n;
+});
+</script>
+</body>
+</html>

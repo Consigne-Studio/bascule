@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Atelier démo — catalogue</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <h1>Atelier démo</h1>
+  <span>Panier : <strong id="panier-compte">0</strong></span>
+  <a href="panier.html" id="voir-panier">Voir le panier</a>
+  <div class="menu"><button type="button" id="menu-compte">Compte</button>
+    <div class="sous-menu"><button type="button" id="deconnexion">Se déconnecter</button></div>
+  </div>
+</header>
+<main>
+  <h2>Catalogue des pièces</h2>
+  <p>
+    <label for="filtre">Rechercher</label><input type="text" id="filtre" name="filtre" placeholder="Référence ou désignation">
+    <label for="categorie">Catégorie</label>
+    <select id="categorie" name="categorie">
+      <option value="toutes">Toutes</option><option value="vannes">Vannes</option>
+      <option value="pompes">Pompes</option><option value="capteurs">Capteurs</option>
+    </select>
+  </p>
+  <div id="chargement" class="chargement">Chargement du catalogue…</div>
+  <table id="pieces" class="cache">
+    <thead><tr><th>Référence</th><th>Désignation</th><th>Catégorie</th><th>Prix</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <p id="resultats"></p>
+  <h3>Aide en ligne</h3>
+  <iframe id="cadre-aide" name="aide" src="aide.html" title="Aide"></iframe>
+</main>
+<div class="bandeau-cookies" id="bandeau-cookies">Ce site de démonstration utilise un cookie de session. <button type="button" id="accepter-cookies">J'ai compris</button></div>
+<script>
+const PIECES = [
+  ['VAN-101', 'Vanne à boisseau DN25', 'vannes', 84.0], ['VAN-102', 'Vanne papillon DN80', 'vannes', 212.5],
+  ['VAN-103', 'Électrovanne 24 V', 'vannes', 139.9], ['POM-201', 'Pompe centrifuge 1,5 kW', 'pompes', 689.0],
+  ['POM-202', 'Pompe doseuse', 'pompes', 455.0], ['CAP-301', 'Capteur de pression 0-10 bar', 'capteurs', 98.0],
+  ['CAP-302', 'Sonde PT100', 'capteurs', 36.5], ['CAP-303', 'Débitmètre électromagnétique', 'capteurs', 1240.0],
+];
+const panier = JSON.parse(localStorage.getItem('panier') || '[]');
+const compte = () => document.getElementById('panier-compte').textContent = panier.length;
+compte();
+if (document.cookie.includes('bandeau=vu')) document.getElementById('bandeau-cookies').remove();
+document.getElementById('accepter-cookies')?.addEventListener('click', () => {
+  document.cookie = 'bandeau=vu; path=/'; document.getElementById('bandeau-cookies').remove();
+});
+function afficher() {
+  const f = document.getElementById('filtre').value.toLowerCase(), c = document.getElementById('categorie').value;
+  const corps = document.querySelector('#pieces tbody'); corps.innerHTML = '';
+  const lignes = PIECES.filter(p => (c === 'toutes' || p[2] === c) && (p[0] + ' ' + p[1]).toLowerCase().includes(f));
+  for (const [ref, nom, cat, prix] of lignes) {
+    const tr = document.createElement('tr'); tr.dataset.ref = ref;
+    tr.innerHTML = `<td class="ref">${ref}</td><td class="nom">${nom}</td><td>${cat}</td><td class="prix">${prix.toFixed(2).replace('.', ',')} €</td><td><button type="button" class="ajouter" data-ref="${ref}">Ajouter</button></td>`;
+    corps.appendChild(tr);
+  }
+  document.getElementById('resultats').textContent = `${lignes.length} pièce(s)`;
+}
+setTimeout(() => {
+  document.getElementById('chargement').remove();
+  document.getElementById('pieces').classList.remove('cache');
+  afficher();
+}, 700);
+document.getElementById('filtre').addEventListener('input', afficher);
+document.getElementById('categorie').addEventListener('change', afficher);
+document.addEventListener('click', e => {
+  const b = e.target.closest('button.ajouter');
+  if (b) { panier.push(b.dataset.ref); localStorage.setItem('panier', JSON.stringify(panier)); compte(); b.textContent = 'Ajouté'; }
+});
+document.getElementById('deconnexion').addEventListener('click', () => {
+  if (confirm('Voulez-vous vous déconnecter ?')) {
+    document.cookie = 'session=; path=/; max-age=0'; localStorage.removeItem('panier'); location.href = 'index.html';
+  }
+});
+</script>
+</body>
+</html>

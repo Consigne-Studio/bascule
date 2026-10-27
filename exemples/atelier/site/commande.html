@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Atelier démo — commande</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><h1>Atelier démo</h1></header>
+<main>
+  <h2>Commande</h2>
+  <form id="commande">
+    <label for="nom">Nom</label><input type="text" id="nom" name="nom" required>
+    <label for="courriel">Courriel</label><input type="email" id="courriel" name="courriel" required>
+    <label for="adresse">Adresse de livraison</label><textarea id="adresse" name="adresse" rows="3"></textarea>
+    <label for="bon">Bon de commande (PDF)</label><input type="file" id="bon" name="bon">
+    <p id="fichier-choisi"></p>
+    <label>Ordre de livraison (glisser pour réordonner)</label>
+    <ul id="priorites"><li data-id="a">Pompes</li><li data-id="b">Vannes</li><li data-id="c">Capteurs</li></ul>
+    <p><label style="display:inline"><input type="checkbox" id="cgv" name="cgv"> J'accepte les conditions de vente</label></p>
+    <p><button type="submit" class="primaire" id="valider">Valider la commande</button></p>
+  </form>
+  <p id="confirmation" class="cache" role="status"></p>
+</main>
+<script>
+document.getElementById('bon').addEventListener('change', e => document.getElementById('fichier-choisi').textContent = e.target.files[0]?.name ?? '');
+document.getElementById('commande').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!document.getElementById('cgv').checked) { alert('Veuillez accepter les conditions de vente.'); return; }
+  const c = document.getElementById('confirmation');
+  setTimeout(() => { c.textContent = 'Commande ATL-0001 enregistrée pour ' + document.getElementById('nom').value + '.'; c.classList.remove('cache'); }, 800);
+});
+// Réordonnancement à la souris (mousedown / mousemove / mouseup), compatible avec les pilotes de test.
+const liste = document.getElementById('priorites'); let saisi = null;
+liste.addEventListener('mousedown', e => { saisi = e.target.closest('li'); saisi?.classList.add('saisi'); });
+document.addEventListener('mouseup', e => {
+  if (!saisi) return;
+  const cible = document.elementFromPoint(e.clientX, e.clientY)?.closest('#priorites li');
+  if (cible && cible !== saisi) liste.insertBefore(saisi, cible);
+  saisi.classList.remove('saisi'); saisi = null;
+});
+</script>
+</body>
+</html>

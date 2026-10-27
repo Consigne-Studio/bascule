@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Atelier démo — connexion</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><h1>Atelier démo</h1></header>
+<main>
+  <h2>Connexion</h2>
+  <form id="connexion">
+    <label for="utilisateur">Identifiant</label>
+    <input type="text" id="utilisateur" name="utilisateur" autocomplete="username">
+    <label for="mot-de-passe">Mot de passe</label>
+    <input type="password" id="mot-de-passe" name="motdepasse" autocomplete="current-password">
+    <p><button type="submit" class="primaire">Se connecter</button></p>
+    <p class="erreur cache" id="erreur" role="alert">Identifiant ou mot de passe incorrect.</p>
+  </form>
+  <p><a href="aide.html">Aide</a></p>
+</main>
+<script>
+document.getElementById('connexion').addEventListener('submit', e => {
+  e.preventDefault();
+  const u = document.getElementById('utilisateur').value, p = document.getElementById('mot-de-passe').value;
+  if (u === 'demo' && p === 'demo') {
+    document.cookie = 'session=demo; path=/';
+    setTimeout(() => location.href = 'catalogue.html', 300);
+  } else {
+    document.getElementById('erreur').classList.remove('cache');
+  }
+});
+</script>
+</body>
+</html>

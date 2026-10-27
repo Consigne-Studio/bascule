@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bascule.Noyau/Bascule.Noyau.csproj" />
+    <Project Path="src/Bascule/Bascule.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bascule.Tests/Bascule.Tests.csproj" />
+  </Folder>
+</Solution>

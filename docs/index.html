@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bascule · documentation</title>
+<meta name="description" content="Documentation de Bascule, diagnostic d'une suite de tests Selenium C# avant sa migration vers Playwright .NET : installation, commandes, rapport, règles de conversion, résultats mesurés.">
+<meta property="og:title" content="Bascule · documentation">
+<meta property="og:description" content="Diagnostic d'une suite Selenium C# avant migration vers Playwright .NET. Hors ligne, licence MIT.">
+<meta property="og:image" content="images/social-1280x640.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%232BB673' stroke='%231B1E21' stroke-width='4'/%3E%3Cline x1='2' y1='32' x2='62' y2='32' stroke='%231B1E21' stroke-width='4'/%3E%3C/svg%3E">
+<style>
+@font-face{font-family:Archivo;src:url(polices/Archivo-var.woff2) format('woff2');font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+@font-face{font-family:'Martian Mono';src:url(polices/MartianMono-var.woff2) format('woff2');font-weight:100 800;font-stretch:75% 112.5%;font-display:swap}
+@font-face{font-family:Atkinson;src:url(polices/AtkinsonHyperlegibleNext-var.woff2) format('woff2');font-weight:200 800;font-display:swap}
+:root{--process:#D4D7DA;--releve:#F3F4F5;--carter:#9AA0A6;--gris:#5C636A;--graphite:#1B1E21;--acier:#2A2F34;--trame:rgba(27,30,33,.075);--signal:#2BB673;
+  --titre:Archivo,'Arial Narrow',sans-serif;--data:'Martian Mono',ui-monospace,monospace;--texte:Atkinson,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font:17px/1.55 var(--texte);color:var(--graphite);background:var(--releve);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.titre{font-family:var(--titre);font-weight:800;font-stretch:62%;text-transform:uppercase;line-height:.88;letter-spacing:-.005em}
+.data{font-family:var(--data);font-stretch:87.5%;font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.planche{background-color:var(--process);background-image:linear-gradient(var(--trame) 1px,transparent 1px),linear-gradient(90deg,var(--trame) 1px,transparent 1px);background-size:16px 16px}
+.l{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{display:flex;align-items:center;gap:20px;padding:18px 0;border-bottom:1.5px solid var(--graphite)}
+nav .marque{display:flex;align-items:center;gap:10px;text-decoration:none}
+nav .marque b{font:800 22px/1 var(--titre);font-stretch:62%;text-transform:uppercase}
+nav .liens{margin-left:auto;display:flex;gap:22px;font-size:13px}
+nav .liens a{text-decoration:none;font:500 11px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border:1.5px solid var(--graphite);text-decoration:none;font:500 12px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase;background:var(--releve)}
+.btn.plein{background:var(--graphite);color:var(--releve)}
+.btn.plein i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--signal)}
+.btn:hover{outline:3px solid var(--signal);outline-offset:0}
+header.hero{padding:56px 0 64px;border-bottom:1.5px solid var(--graphite)}
+.hero .g{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(52px,8.2vw,108px);margin:22px 0 22px}
+.hero p.chapo{font-size:21px;line-height:1.4;max-width:560px;font-weight:500}
+.hero .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.hero .page{display:block;position:relative;border:1.5px solid var(--graphite);box-shadow:14px 14px 0 rgba(27,30,33,.12);background:#fff}
+.hero .legende{margin-top:14px;font-size:10.5px;color:var(--gris)}
+.specs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--graphite);border-bottom:1.5px solid var(--graphite);margin-top:40px}
+.specs div{padding:14px 18px 16px;border-left:1px solid var(--graphite)}
+.specs div:first-child{border-left:0;padding-left:0}
+.specs b{display:block;font:800 44px/1 var(--titre);font-stretch:62%}
+.specs span{font:500 10.5px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase;color:var(--gris)}
+section{padding:72px 0;border-bottom:1.5px solid var(--graphite)}
+section .ent{display:flex;align-items:baseline;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+section .ent .data{color:var(--gris);font-size:11px}
+section h2{font-size:clamp(38px,5vw,60px)}
+section p.intro{max-width:760px;font-size:19px;margin-bottom:28px}
+.etapes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid var(--graphite);background:var(--releve)}
+.etapes > div{padding:24px;border-left:1.5px solid var(--graphite)}
+.etapes > div:first-child{border-left:0}
+.etapes .n{display:inline-grid;place-items:center;width:30px;height:30px;border:1.5px solid var(--graphite);font:500 13px var(--data);margin-bottom:14px}
+.etapes h3{font:800 26px/1 var(--titre);font-stretch:62%;text-transform:uppercase;margin-bottom:10px}
+.etapes p{font-size:16px}
+.etapes .q{margin-top:14px;font-size:10.5px;color:var(--gris)}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.deux>*,.hero .g>*,.offre,.etapes>div{min-width:0}
+code{word-break:break-word}
+ul.coche{list-style:none;padding:0}
+ul.coche li{padding:10px 0 10px 28px;border-bottom:1px solid var(--carter);position:relative}
+ul.coche li::before{content:"";position:absolute;left:4px;top:18px;width:10px;height:10px;border:1.5px solid var(--graphite);background:var(--releve)}
+.galerie{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.galerie figure{border:1.5px solid var(--graphite);background:#fff}
+.galerie figcaption{padding:10px 12px;border-top:1.5px solid var(--graphite);font-size:10.5px;background:var(--releve)}
+pre{font:13px/1.6 var(--data);font-stretch:87.5%;background:var(--graphite);color:var(--releve);padding:18px 20px;overflow-x:auto;border:0}
+pre .c{color:var(--carter)}
+.offres{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid var(--graphite);background:var(--releve)}
+.offre{padding:28px 26px;border-left:1.5px solid var(--graphite);display:flex;flex-direction:column}
+.offre:first-child{border-left:0}
+.offre.mise{background:#fff;box-shadow:inset 0 6px 0 var(--signal)}
+.offre .nom{font:500 11px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase;color:var(--gris)}
+.offre .prix{font:800 56px/1 var(--titre);font-stretch:62%;margin:12px 0 4px}
+.offre .prix small{font-size:22px}
+.offre .sous{font-size:14px;color:var(--gris);margin-bottom:16px}
+.offre ul{flex:1;margin-bottom:22px}
+.offre ul.coche li{font-size:15px;padding:8px 0 8px 26px}
+.offre ul.coche li::before{top:15px}
+table.t{width:100%;border-collapse:collapse;font-size:15px;background:var(--releve)}
+table.t th{text-align:left;font:500 10.5px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);border-bottom:1.5px solid var(--graphite);padding:10px 12px}
+table.t td{border-bottom:1px solid var(--carter);padding:12px;vertical-align:top}
+table.t tr.nous td{background:#fff;font-weight:600}
+table.t tr.nous td:first-child{box-shadow:inset 4px 0 0 var(--signal)}
+.formule{font:500 15px/1.6 var(--data);font-stretch:87.5%;background:#fff;border:1.5px solid var(--graphite);padding:18px 20px;margin-bottom:18px}
+details{border-bottom:1px solid var(--carter);padding:16px 0}
+details summary{cursor:pointer;font-weight:700;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:20px}
+details summary::after{content:"+";font:500 18px var(--data)}
+details[open] summary::after{content:"−"}
+details p{margin-top:10px;max-width:820px}
+.cartouche{display:grid;grid-template-columns:2fr 1fr 1fr;border:1.5px solid var(--graphite);margin-top:40px;background:var(--releve)}
+.cartouche div{padding:10px 14px;border-left:1.5px solid var(--graphite)}
+.cartouche div:first-child{border-left:0}
+.cartouche .k{display:block;font:500 9px var(--data);letter-spacing:.06em;text-transform:uppercase;color:var(--gris)}
+.cartouche .v{font:800 22px/1.1 var(--titre);font-stretch:62%;text-transform:uppercase}
+footer{padding:40px 0 60px;font-size:14px;color:var(--gris)}
+footer .g{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.note{font-size:13px;color:var(--gris);margin-top:12px}
+@media (max-width:900px){
+  .hero .g,.deux{grid-template-columns:1fr}
+  .etapes,.offres,.galerie{grid-template-columns:1fr}
+  .etapes > div,.offre{border-left:0;border-top:1.5px solid var(--graphite)}
+  .etapes > div:first-child,.offre:first-child{border-top:0}
+  .specs{grid-template-columns:1fr 1fr}
+  .specs div:nth-child(3){border-left:0;padding-left:0}
+  .specs div:nth-child(n+3){border-top:1px solid var(--graphite)}
+  nav .liens{display:none}
+  .cartouche{grid-template-columns:1fr}
+  .cartouche div{border-left:0;border-top:1.5px solid var(--graphite)}
+  .cartouche div:first-child{border-top:0}
+  table.t{font-size:13.5px}
+  .tableau{overflow-x:auto}
+}
+@media (max-width:520px){ .l{padding:0 16px} body{font-size:16px} .hero p.chapo{font-size:18px} section{padding:52px 0}
+  #outils table.t thead{display:none}
+  #outils table.t, #outils table.t tbody, #outils table.t tr, #outils table.t td{display:block;width:100%}
+  #outils table.t tr{border-bottom:1.5px solid var(--graphite);padding:6px 0}
+  #outils table.t td{border:0;padding:4px 12px}
+  #outils table.t td:first-child{font-weight:700}
+  #outils table.t td:nth-child(2)::before{content:'Bien : ';font:500 10.5px var(--data);text-transform:uppercase;color:var(--gris)}
+  #outils table.t td:nth-child(3)::before{content:'Limite : ';font:500 10.5px var(--data);text-transform:uppercase;color:var(--gris)}
+}
+
+.diff{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--graphite);background:#fff}
+.diff>div{min-width:0}
+.diff>div+div{border-left:1.5px solid var(--graphite)}
+.diff .t{padding:10px 16px;border-bottom:1.5px solid var(--graphite);font:500 10.5px var(--data);font-stretch:87.5%;letter-spacing:.06em;text-transform:uppercase;color:var(--gris);display:flex;justify-content:space-between;gap:12px;background:var(--releve)}
+.diff pre{background:#fff;color:var(--graphite);margin:0;padding:14px 0;font-size:12.5px;line-height:1.7;overflow-x:auto}
+.diff pre span{display:block;padding:0 16px;white-space:pre}
+.diff pre .m{background:rgba(43,182,115,.16);box-shadow:inset 5px 0 0 var(--signal);font-weight:700}
+.diff pre .o{color:var(--gris)}
+.diff pre .x{background:rgba(27,30,33,.06)}
+.legende-diff{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:10.5px;color:var(--gris)}
+.legende-diff i{display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:6px;background:rgba(43,182,115,.16);box-shadow:inset 3px 0 0 var(--signal)}
+.niveaux{display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--graphite);background:var(--releve)}
+.niveaux>div{padding:22px 24px;border-left:1.5px solid var(--graphite);min-width:0}
+.niveaux>div:first-child{border-left:0}
+.niveaux b{display:block;font:800 26px/1 var(--titre);font-stretch:62%;text-transform:uppercase;margin:6px 0 8px}
+.pastille{display:inline-block;width:12px;height:12px;border:1.5px solid var(--graphite);border-radius:50%}
+@media (max-width:900px){.diff,.niveaux{grid-template-columns:1fr}.diff>div+div,.niveaux>div{border-left:0}.diff>div+div,.niveaux>div+div{border-top:1.5px solid var(--graphite)}}
+</style>
+</head>
+<body>
+<div class="l">
+  <nav>
+    <a class="marque" href="#"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30.6" fill="#2BB673" stroke="#1B1E21" stroke-width="2.8"/><line x1="1.4" y1="32" x2="62.6" y2="32" stroke="#1B1E21" stroke-width="2.8"/><text x="32" y="26" text-anchor="middle" font-family="Archivo" font-stretch="62%" font-weight="800" font-size="19" fill="#1B1E21">DEV</text><text x="32" y="49" text-anchor="middle" font-family="Martian Mono" font-stretch="87.5%" font-size="12.5" fill="#1B1E21">606</text></svg><b>Bascule</b></a>
+    <div class="liens"><a href="#installer">Installer</a><a href="#rapport">Le rapport</a><a href="#documents">Documentation</a><a href="https://github.com/consigne/bascule">GitHub ↗</a></div>
+  </nav>
+</div>
+
+<header class="hero planche">
+  <div class="l g">
+    <div>
+      <div class="data" style="font-size:12px;color:var(--gris)">DEV-606 · documentation · licence MIT</div>
+      <h1 class="titre">Avant de migrer vers Playwright, mesurez.</h1>
+      <p class="chapo">Bascule lit une suite de tests Selenium C# avec Roslyn et dit, fichier par fichier, ce qui se convertit tout seul, ce qui sera à relire et ce qui restera à reprendre. Hors ligne, sans compiler ni exécuter la suite.</p>
+      <div class="actions">
+        <a class="btn plein" href="https://github.com/consigne/bascule/releases/latest"><i></i>Télécharger Bascule 1.0.0</a>
+        <a class="btn" href="exemple/diagnostic.html">Rapport d'exemple</a>
+      </div>
+    </div>
+    <div>
+      <a class="page" href="exemple/diagnostic.html"><img src="images/rapport-diagnostic.png" alt="Couverture du rapport de diagnostic : 7 tests, 93 % convertible automatiquement, 2 points à reprendre, environ 0,8 heure de travail" width="2012" height="1382"></a>
+      <div class="legende data">Diagnostic de la suite xUnit de démonstration · ouvrir ↗</div>
+    </div>
+  </div>
+</header>
+
+<section id="installer">
+  <div class="l">
+    <div class="ent"><h2 class="titre">Installer et lancer</h2><span class="data">SDK .NET 8 ou plus récent · Windows, macOS, Linux</span></div>
+    <div class="deux">
+      <div>
+<pre><span class="c"># dans le dossier où vous avez téléchargé Bascule.1.0.0.nupkg</span>
+dotnet tool install --global Bascule \
+    --version 1.0.0 --add-source .
+
+<span class="c"># dossier, .sln, .slnx ou .csproj</span>
+bascule diagnostic MaSuite.sln
+bascule diagnostic ./tests/Projet.Tests --rapport ./audit</pre>
+        <p class="note">Ou depuis les sources : <code>dotnet run --project src/Bascule -c Release -- diagnostic &lt;chemin&gt;</code>. Empreinte du paquet dans <code>SHA256SUMS.txt</code>, à côté du téléchargement.</p>
+      </div>
+      <div>
+        <ul class="coche">
+          <li><b>Cadres</b> : NUnit 3 et 4, MSTest 2 et 3, xUnit 2 ; scénarios Reqnroll et SpecFlow comptés.</li>
+          <li><b>Selenium</b> 3 et 4, SeleniumExtras (attentes, <code>[FindsBy]</code>), WebDriverManager.</li>
+          <li><b>Projets</b> .NET Core 3.1 à .NET 10 et .NET Framework 4.6.2 et plus ; l'ancien format est signalé.</li>
+          <li><b>Rien n'est envoyé</b> : aucun appel réseau ; la suite n'a pas besoin de compiler ni d'être restaurée.</li>
+          <li><b>Sorties</b> : <code>bascule-rapport.html</code> (autonome, imprimable) et <code>bascule-rapport.json</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="rapport" class="planche">
+  <div class="l">
+    <div class="ent"><h2 class="titre">Ce que dit le rapport</h2><span class="data">Trois niveaux, avec l'emplacement exact</span></div>
+    <div class="niveaux">
+      <div><span class="pastille" style="background:var(--signal)"></span><b>Automatique</b><p>Ce que la migration réécrira sans changement de comportement attendu : sélecteurs, actions, lectures, attentes, cadres, alertes, cookies, scripts, assertions.</p></div>
+      <div><span class="pastille" style="background:#fff"></span><b>À relire</b><p>Converti, mais à vérifier : pause fixe gardée, couleur lue en <code>rgb()</code>, envoi de fichier, élément périmé.</p></div>
+      <div><span class="pastille" style="background:var(--graphite)"></span><b>À reprendre</b><p>Sans équivalent automatique : fenêtres par identifiant, script asynchrone, grille distante, Appium, cadre traversé par un utilitaire.</p></div>
+    </div>
+    <div class="deux" style="margin-top:32px">
+      <figure style="border:1.5px solid var(--graphite);background:#fff"><img src="images/rapport-a-reprendre.png" alt="Liste des points à reprendre : fichier, ligne, catégorie, conseil et code concerné" width="2012" height="900"></figure>
+      <div>
+        <p style="margin-bottom:14px">Le travail restant est estimé à <b>20 minutes par point à reprendre (5 quand il se répète dans le même fichier), 4 par point à relire et 1 par test</b> pour la vérification : un ordre de grandeur, pas un devis.</p>
+        <p>Le JSON reprend les mêmes données, pour un tableau de bord ou pour suivre la migration dans le temps.</p>
+        <p style="margin-top:18px"><a class="btn" href="exemple/diagnostic.html">Ouvrir le rapport d'exemple ↗</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="documents">
+  <div class="l">
+    <div class="ent"><h2 class="titre">Documentation</h2></div>
+    <div class="tableau"><table class="t">
+      <thead><tr><th>Document</th><th>Contenu</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://github.com/consigne/bascule/blob/main/docs/regles.md">Règles de conversion</a></td><td>Chaque usage de Selenium, son équivalent Playwright et son niveau</td></tr>
+        <tr><td><a href="https://github.com/consigne/bascule/blob/main/docs/resultats.md">Résultats mesurés</a></td><td>Suites de démonstration et dépôts publics, diagnostic comparé à la migration</td></tr>
+        <tr><td><a href="https://github.com/consigne/bascule/blob/main/docs/faq.md">Questions fréquentes</a></td><td>Installation, confidentialité, async, attentes, licences</td></tr>
+        <tr><td><a href="exemple/migration.html">Rapport de migration (édition Pro)</a></td><td>La suite NUnit de démonstration réécrite : diff de chaque fichier, compilation</td></tr>
+        <tr><td><a href="https://github.com/consigne/bascule/blob/main/CHANGELOG.md">Journal des versions</a></td><td>Ce qui change d'une version à l'autre</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note" style="margin-top:24px">La réécriture automatique (<code>bascule migrer</code>) fait partie de l'édition Pro, et une migration faite pour vous existe au forfait : <a href="https://bascule.pages.dev/">bascule.pages.dev</a>.</p>
+    <div class="cartouche">
+      <div><span class="k">Désignation</span><span class="v">Bascule · documentation</span></div>
+      <div><span class="k">Repère</span><span class="v">DEV-606</span></div>
+      <div><span class="k">Licence</span><span class="v">MIT</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="l g">
+    <div>Bascule est publié par Consigne sous licence MIT. Polices sous licence SIL OFL 1.1.</div>
+    <div>Selenium est un projet de la Software Freedom Conservancy ; Playwright et .NET sont des marques de Microsoft. Aucune affiliation.</div>
+  </div>
+</footer>
+</body>
+</html>

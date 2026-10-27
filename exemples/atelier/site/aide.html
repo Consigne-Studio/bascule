@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Aide</title><link rel="stylesheet" href="style.css"></head>
+<body style="padding:12px">
+  <button type="button" id="astuce">Afficher l'astuce</button>
+  <p id="texte-astuce" class="cache">Filtrez par référence : tapez « VAN » pour les vannes.</p>
+  <script>document.getElementById('astuce').addEventListener('click', () => document.getElementById('texte-astuce').classList.remove('cache'));</script>
+</body>
+</html>
